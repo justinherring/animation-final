@@ -10,7 +10,7 @@ This is the rough plan for the project.
 * player
 * ground
 
-* player can move in either direction indefinitely and camera tracks them
+- [x] player can move in either direction indefinitely and camera tracks them
 
 * background buildings to swing from
 * foreground buildings
@@ -56,7 +56,7 @@ This is the rough plan for the project.
     * bool isBackground()
     * bool shootable() // can be shot with a web 
 * PhysicsObject : EO
-* Ground : EO
+* Ground : EO // could be cool to pull yourself towards the ground
     * bool collide(...)
     * height(double y)
 * BGBuilding : EO
@@ -80,3 +80,7 @@ This is the rough plan for the project.
     * sky texture
     * draw()
     * step()
+
+P to pause (instead of spacebar)
+F in direction of cursor to shoot web
+

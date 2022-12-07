@@ -23,11 +23,13 @@
 #include "MatrixStack.h"
 #include "Shape.h"
 #include "Scene.h"
+#include "Player.h"
 
 using namespace std;
 using namespace Eigen;
 
 bool keyToggles[256] = {false}; // only for English keyboards!
+bool keyPresses[256] = { false };
 
 GLFWwindow *window; // Main application window
 string RESOURCE_DIR = ""; // Where the resources are loaded from
@@ -51,6 +53,21 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 		stop_flag = true;
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
+
+	if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+		keyPresses['a'] = true;
+	}
+	if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+		keyPresses['d'] = true;
+	}
+
+	if (key == GLFW_KEY_A && action == GLFW_RELEASE) {
+		keyPresses['a'] = false;
+	}
+
+	if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
+		keyPresses['d'] = false;
+	}
 }
 
 static void char_callback(GLFWwindow *window, unsigned int key)
@@ -58,7 +75,8 @@ static void char_callback(GLFWwindow *window, unsigned int key)
 	keyToggles[key] = !keyToggles[key];
 	switch(key) {
 		case 'h':
-			scene->step();
+			scene->step(keyPresses);
+			camera->followPlayerTranslation(scene->getPlayer()->position());
 			break;
 		case 'r':
 			scene->reset();
@@ -86,7 +104,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		bool shift = mods & GLFW_MOD_SHIFT;
 		bool ctrl  = mods & GLFW_MOD_CONTROL;
 		bool alt   = mods & GLFW_MOD_ALT;
-		camera->mouseClicked(xmouse, ymouse, shift, ctrl, alt);
+		//camera->mouseClicked(xmouse, ymouse, shift, ctrl, alt);
 	}
 }
 
@@ -123,6 +141,7 @@ static void init()
 	prog->setVerbose(false);
 	
 	camera = make_shared<Camera>();
+	camera->setInitDistance(1.0f);
 
 	scene = make_shared<Scene>();
 	scene->load(RESOURCE_DIR);
@@ -133,6 +152,9 @@ static void init()
 	// You can intersperse this line in your code to find the exact location
 	// of your OpenGL error.
 	GLSL::checkError(GET_FILE_LINE);
+
+	keyToggles['p'] = true;
+	camera->setTranslation(camera->offset());
 }
 
 void render()
@@ -208,6 +230,7 @@ void render()
 	glVertex3f(x1, 0.0f, z1);
 	glVertex3f(x0, 0.0f, z1);
 	glEnd();
+	scene->drawLines(MV, progSimple);
 	progSimple->unbind();
 
 	// Draw scene
@@ -235,8 +258,9 @@ void stepperFunc()
 	int n = 0;
 	while(!stop_flag) {
 		auto t0 = std::chrono::system_clock::now();
-		if(keyToggles[(unsigned)' ']) {
-			scene->step();
+		if(keyToggles[(unsigned)'p']) {
+			scene->step(keyPresses);
+			camera->followPlayerTranslation(scene->getPlayer()->position());
 		}
 		auto t1 = std::chrono::system_clock::now();
 		double dt = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
@@ -268,7 +292,7 @@ int main(int argc, char **argv)
 		return -1;
 	}
 	// Create a windowed mode window and its OpenGL context.
-	window = glfwCreateWindow(640, 480, "YOUR NAME", NULL, NULL);
+	window = glfwCreateWindow(640, 480, "JUSTIN HERRING", NULL, NULL);
 	if(!window) {
 		glfwTerminate();
 		return -1;

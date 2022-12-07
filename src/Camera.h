@@ -7,6 +7,8 @@
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 
+#include <Eigen/Dense>
+
 class MatrixStack;
 
 class Camera
@@ -32,7 +34,32 @@ public:
 	void mouseMoved(float x, float y);
 	void applyProjectionMatrix(std::shared_ptr<MatrixStack> P) const;
 	void applyViewMatrix(std::shared_ptr<MatrixStack> MV) const;
-	
+
+	void setTranslation(glm::vec3 t) { translations = t; }
+	void setTranslation(Eigen::Vector3d t) {
+		translations.x = t(0);
+		translations.y = t(1);
+		translations.z = t(2);
+	}
+	void setTranslation(float x, float y, float z) {
+		translations.x = x;
+		translations.y = y;
+		translations.z = z;
+	}
+
+	float x() { return translations.x; }
+	float y() { return translations.y; }
+	float z() { return translations.z; }
+	glm::vec3 offset() { 
+		glm::vec3 t;
+		t.x = 0.0f;
+		t.y = -0.2f;
+		t.z = -2.0f;
+		return t;
+	}
+
+	void followPlayerTranslation(Eigen::Vector3d playerPosition);
+
 private:
 	float aspect;
 	float fovy;

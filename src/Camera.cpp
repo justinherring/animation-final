@@ -66,3 +66,10 @@ void Camera::applyViewMatrix(std::shared_ptr<MatrixStack> MV) const
 	MV->rotate(rotations.y, glm::vec3(1.0f, 0.0f, 0.0f));
 	MV->rotate(rotations.x, glm::vec3(0.0f, 1.0f, 0.0f));
 }
+
+void Camera::followPlayerTranslation(Eigen::Vector3d playerPosition) {
+	playerPosition(0) *= -1.0;
+	playerPosition(1) += offset().y;
+	playerPosition(2) = translations.z;
+	setTranslation(playerPosition);
+}
