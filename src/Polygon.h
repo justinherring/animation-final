@@ -30,7 +30,7 @@ public:
 
 	bool collide(std::shared_ptr<Particle> v);
 	bool collide(std::shared_ptr<Polygon> p);
-	void step(double h, Eigen::Vector3d grav, Eigen::Vector3d movement);
+	void step(Eigen::Vector3d position);
 
 	std::vector<std::shared_ptr<Particle> > vertices;
 	std::vector<std::shared_ptr<Spring> > springs;

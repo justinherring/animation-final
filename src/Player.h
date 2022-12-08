@@ -12,7 +12,6 @@ public:
 		const std::shared_ptr<Shape> cube, const std::shared_ptr<Shape> sphere);
 	~Player();
 
-	void move(Eigen::Vector2d direction);
 	Ray shootWeb(Eigen::Vector2d position);
 	void removeWeb();
 
@@ -34,6 +33,16 @@ private:
 	Ray web;
 	std::shared_ptr<Particle> webTarget;
 	std::shared_ptr<Particle> center;
+
+	Eigen::VectorXd v;
+	Eigen::VectorXd f;
+	Eigen::MatrixXd M;
+	Eigen::MatrixXd K;
+
+	double x_original;
+	double y_original;
+
+	std::vector< std::shared_ptr<Spring> > springs;
 
 	void createWeb(std::shared_ptr<Particle> target);
 	void removeBBWeb(std::shared_ptr<Particle> oldTarget);

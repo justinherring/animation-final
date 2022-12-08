@@ -18,28 +18,33 @@ using namespace Eigen;
 
 Player::Player(double x0, double y0, double width, double height,
 	const std::shared_ptr<Shape> cube, const std::shared_ptr<Shape> sphere) :
-	x0(x0), y0(y0), width(width), height(height), cube(cube)
+	x0(x0), y0(y0), width(width), height(height), cube(cube), x_original(x0), y_original(y0)
 {
 	boundingBox = make_shared<Polygon>(x0, y0, width, height, sphere, false);
+	M.resize(3, 3);
+	K.resize(3, 3);
+	v.resize(3);
+	f.resize(3);
+
+	center = make_shared<Particle>(sphere);
+	center->x(0) = x0 + width * 0.5;
+	center->x(1) = y0 + height * 0.5;
+	center->x(2) = 0.0;
+	center->m = 1;
+	center->r = width * 0.5;
+	center->fixed = false;
 }
 
-Player::~Player() {
-
-}
-
-void Player::move(Vector2d direction) {
-
-}
+Player::~Player() {}
 
 void Player::createWeb(shared_ptr<Particle> target) {
-	double stiffness = 100.0;
-	for (auto v : boundingBox->vertices) {
-		boundingBox->springs.push_back(boundingBox->createSpring(v, target, stiffness));
-	}
+	double stiffness = 1000.0;
+	springs.push_back(boundingBox->createSpring(center, target, stiffness));
 }
 
 void Player::removeBBWeb(shared_ptr<Particle> oldTarget) {
-	boundingBox->springs.erase(boundingBox->springs.begin() + 6, boundingBox->springs.end());
+	springs.clear();
+	webTarget = nullptr;
 }
 
 Ray Player::shootWeb(Vector2d position) {
@@ -60,7 +65,6 @@ Ray Player::shootWeb(Vector2d position) {
 void Player::removeWeb() {
 	this->web = Ray();
 	removeBBWeb(webTarget);
-	webTarget = nullptr;
 }
 
 void Player::reset() {
@@ -76,7 +80,84 @@ void Player::step(double h, Vector3d grav, bool keys[256]) {
 	dx << 0.02, 0.0, 0.0;
 	speed = (-keys['a'] + keys['d']) * dx;
 
-	boundingBox->step(h, grav, speed);
+	M.setZero();
+	K.setZero();
+	v.setZero();
+	f.setZero();
+
+	M.setIdentity();
+	M *= center->m;
+	
+	v = center->v + speed;
+	f = center->m * grav;
+
+	for (int i = 0; i < springs.size(); i++) {
+		auto spring = springs[i];
+
+		Vector3d dx = spring->p1->x - spring->p0->x;
+		double l = dx.norm();
+		double lfrac = (l - spring->L) / l;
+		Vector3d fs = spring->E * lfrac * dx;
+		Matrix3d I3d;
+		I3d.setIdentity();
+		Matrix3d Ks = ((1 - lfrac) * dx * dx.transpose() + lfrac * dx.dot(dx) * I3d);
+		Ks *= spring->E / (l * l);
+		if (!spring->p0->fixed) {
+			f += fs;
+			K -= Ks;
+		}
+		/*if (!spring->p1->fixed) {
+			f.segment<3>(spring->p1->i) -= fs;
+			K.block<3, 3>(spring->p1->i, spring->p1->i) -= Ks;
+		}
+		// only add diagonal springs if both particles aren't fixed
+		if (!spring->p0->fixed && !spring->p1->fixed) {
+			K.block<3, 3>(spring->p0->i, spring->p1->i) += Ks;
+			K.block<3, 3>(spring->p1->i, spring->p0->i) += Ks;
+		}*/
+	}
+
+	// Collision detection and response
+	double collisionConstant = 100.0;
+	/*
+	for (int i = 0; i < vertices.size(); i++) {
+		if (vertices[i]->fixed) continue;
+		auto p = vertices[i];
+		for (int j = 0; j < spheres.size(); j++) {
+			auto s = spheres[j];
+
+			Vector3d dx = s->x - p->x;
+			double l = dx.norm();
+			double d = s->r + p->r - l;
+
+			if (d > 0) {
+				Vector3d n = dx / l;
+				f.segment<3>(p->i) -= collisionConstant * d * n;
+
+				Matrix3d I3d;
+				I3d.setIdentity();
+				K.block<3, 3>(p->i, p->i) += collisionConstant * d * I3d;
+			}
+		}
+
+	}*/
+
+	MatrixXd A = M - h * h * K;
+	MatrixXd b = M * v + h * f;
+	//cout << "A:\n" << A << "\n\nb:\n" << b << endl;
+	VectorXd solution = A.ldlt().solve(b); // solution contains v(k+1)
+	center->v = solution;
+	center->x = center->x + h * center->v;
+
+	double physicsFloor = height / 2.0;
+	double damping = 0.5;
+	if (center->x(1) <= physicsFloor) {
+		center->x(1) = physicsFloor;
+		center->v(1) = -center->v(1) * damping;
+	}
+
+	boundingBox->step(center->x);
+
 }
 
 void Player::drawWebs() const {
@@ -110,4 +191,5 @@ Vector3d Player::position() const {
 
 void Player::drawBoundingBox(shared_ptr<MatrixStack> MV, const shared_ptr<Program> prog) const {
 	boundingBox->draw(MV, prog);
+	center->draw(MV, prog);
 }
