@@ -38,6 +38,7 @@ shared_ptr<Camera> camera;
 shared_ptr<Program> prog;
 shared_ptr<Program> progSimple;
 shared_ptr<Scene> scene;
+int lastMouseButtonState;
 
 // https://stackoverflow.com/questions/41470942/stop-infinite-loop-in-different-thread
 std::atomic<bool> stop_flag;
@@ -81,14 +82,19 @@ static void char_callback(GLFWwindow *window, unsigned int key)
 		case 'r':
 			scene->reset();
 			break;
+		case 'w':
+			if (keyToggles['p'])
+				scene->getPlayer()->removeWeb();
+			break;
 	}
+	scene->setDrawBoundingBoxes(keyToggles['o']);
 }
 
 static void cursor_position_callback(GLFWwindow* window, double xmouse, double ymouse)
 {
 	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 	if(state == GLFW_PRESS) {
-		camera->mouseMoved(xmouse, ymouse);
+		//camera->mouseMoved(xmouse, ymouse);
 	}
 }
 
@@ -104,7 +110,15 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		bool shift = mods & GLFW_MOD_SHIFT;
 		bool ctrl  = mods & GLFW_MOD_CONTROL;
 		bool alt   = mods & GLFW_MOD_ALT;
-		//camera->mouseClicked(xmouse, ymouse, shift, ctrl, alt);
+		//camera->mouseClicked(xmouse, ymouse, shift, ctrl, alt
+		if (keyToggles['p']) {
+			Vector2d cursorPosition;
+			double xdirection = xmouse / (double)width - 0.5;
+			double ydirection = 0.5 - ymouse / (double)height;
+			cursorPosition << xdirection, ydirection;
+			cursorPosition.normalize();
+			scene->getPlayer()->shootWeb(cursorPosition);
+		}
 	}
 }
 

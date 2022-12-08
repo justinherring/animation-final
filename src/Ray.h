@@ -9,6 +9,7 @@ class Ray {
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	
+	Ray() : x(), d() {}
 	Ray(Eigen::Vector3d x, Eigen::Vector3d d) : x(x), d(d) {}
 	
 	Eigen::Vector3d x; // initial position

@@ -14,10 +14,12 @@ public:
 
 	void move(Eigen::Vector2d direction);
 	Ray shootWeb(Eigen::Vector2d position);
+	void removeWeb();
 
 	void step(double h, Eigen::Vector3d grav, bool keys[256]);
 
 	void draw(std::shared_ptr<MatrixStack> MV, const std::shared_ptr<Program> prog) const;
+	void drawBoundingBox(std::shared_ptr<MatrixStack> MV, const std::shared_ptr<Program> prog) const;
 	void drawWebs() const;
 
 	Eigen::Vector3d position() const;
@@ -28,6 +30,7 @@ private:
 	std::shared_ptr<Polygon> boundingBox;
 
 	double x0, y0, width, height;
+	Ray web;
 };
 
 #endif

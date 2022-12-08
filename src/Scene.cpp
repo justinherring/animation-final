@@ -5,6 +5,7 @@
 #include "Shape.h"
 #include "Program.h"
 #include "Player.h"
+#include "Building.h"
 
 using namespace std;
 using namespace Eigen;
@@ -12,7 +13,8 @@ using namespace Eigen;
 Scene::Scene() :
 	t(0.0),
 	h(1e-2),
-	grav(0.0, 0.0, 0.0)
+	grav(0.0, 0.0, 0.0),
+	drawBoundingBoxes(false)
 {
 }
 
@@ -34,6 +36,12 @@ void Scene::load(const string &RESOURCE_DIR)
 	cube->loadMesh(RESOURCE_DIR + "cube.obj");
 
 	player = make_shared<Player>(0, 0, 0.1, 0.2, cube, sphere);
+	int maxBuildings = 10;
+	int spacing = 1;
+	for (int i = 0; i < maxBuildings; i++) {
+		shared_ptr<Building> b = make_shared<Building>((1 + spacing) * i - maxBuildings / (1 + spacing), 0, 1, 5, 3, cube, sphere);
+		backgroundBuildings.push_back(b);
+	}
 	
 }
 
@@ -69,6 +77,14 @@ void Scene::draw(shared_ptr<MatrixStack> MV, const shared_ptr<Program> prog) con
 	// glUniform3fv(prog->getUniform("kdFront"), 1, Vector3f(1.0, 1.0, 1.0).data());
 	
 	player->draw(MV, prog);
+	if (drawBoundingBoxes) {
+		player->drawBoundingBox(MV, prog);
+	}
+	for (auto b : backgroundBuildings) {
+		b->draw(MV, prog);
+		if (drawBoundingBoxes)
+			b->boundingBox->draw(MV, prog);
+	}
 }
 
 void Scene::drawLines(shared_ptr<MatrixStack> MV, const shared_ptr<Program> prog) const {

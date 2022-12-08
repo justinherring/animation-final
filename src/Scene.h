@@ -14,6 +14,7 @@ class MatrixStack;
 class Program;
 class Shape;
 class Player;
+class Building;
 
 class Scene
 {
@@ -34,17 +35,26 @@ public:
 	
 	double getTime() const { return t; }
 
+	void setDrawBoundingBoxes(bool b) { drawBoundingBoxes = b; }
+	bool doesDrawBoundingBoxes() { return drawBoundingBoxes; }
+
 	std::shared_ptr<Player> getPlayer();
+
+	void shootWeb(Eigen::Vector2d position);
+	void removeWeb();
 	
 private:
 	double t;
 	double h;
 	Eigen::Vector3d grav;
 
+	bool drawBoundingBoxes;
+
 	std::shared_ptr<Shape> sphere, cube;
 	std::shared_ptr<Player> player;
 	
 	std::vector< std::shared_ptr<Particle> > spheres;
+	std::vector< std::shared_ptr<Building> > backgroundBuildings;
 };
 
 #endif

@@ -82,5 +82,8 @@ This is the rough plan for the project.
     * step()
 
 P to pause (instead of spacebar)
-F in direction of cursor to shoot web
+Left click to shoot web in that direction (maybe add right click for second web?)
+W to release web (add s for rightclick web?)
+O to turn on collision detection info
+
 
