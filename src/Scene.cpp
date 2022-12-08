@@ -61,9 +61,7 @@ void Scene::tare()
 void Scene::reset()
 {
 	t = 0.0;
-	for(int i = 0; i < (int)spheres.size(); ++i) {
-		spheres[i]->reset();
-	}
+	player->reset();
 }
 
 void Scene::step(bool keys[256])

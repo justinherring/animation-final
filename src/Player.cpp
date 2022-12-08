@@ -31,35 +31,62 @@ void Player::move(Vector2d direction) {
 
 }
 
+void Player::createWeb(shared_ptr<Particle> target) {
+	double stiffness = 100.0;
+	for (auto v : boundingBox->vertices) {
+		boundingBox->springs.push_back(boundingBox->createSpring(v, target, stiffness));
+	}
+}
+
+void Player::removeBBWeb(shared_ptr<Particle> oldTarget) {
+	boundingBox->springs.erase(boundingBox->springs.begin() + 6, boundingBox->springs.end());
+}
+
 Ray Player::shootWeb(Vector2d position) {
 	Vector3d direction;
 	direction(0) = position(0);
 	direction(1) = position(1);
 	direction(2) = 0.0;
+	if (webTarget) {
+		removeBBWeb(webTarget);
+	}
+	webTarget = make_shared<Particle>();
+	webTarget->x = this->position() + direction;
+	createWeb(webTarget);
 	this->web = Ray(Vector3d(), direction);
 	return this->web;
 }
 
 void Player::removeWeb() {
 	this->web = Ray();
+	removeBBWeb(webTarget);
+	webTarget = nullptr;
+}
+
+void Player::reset() {
+	if (webTarget) {
+		removeBBWeb(webTarget);
+		webTarget = nullptr;
+	}
+	boundingBox->reset();
 }
 
 void Player::step(double h, Vector3d grav, bool keys[256]) {
 	Vector3d speed, dx;
-	dx << 0.01, 0.0, 0.0;
+	dx << 0.02, 0.0, 0.0;
 	speed = (-keys['a'] + keys['d']) * dx;
 
 	boundingBox->step(h, grav, speed);
 }
 
 void Player::drawWebs() const {
-	if (web.d == Vector3d()) return;
+	if (!webTarget) return;
 
 	glColor3f(0.8f, 0.8f, 0.8f);
 	glLineWidth(4.0f);
 	glBegin(GL_LINES);
-	glVertex3f(boundingBox->x0, boundingBox->y0 + height / 2.0, 0.0f);
-	glVertex3f(boundingBox->x0 + this->web.d(0), boundingBox->y0 + height / 2.0 + this->web.d(1), 0.0f);
+	glVertex3f(boundingBox->x0 + width / 2.0, boundingBox->y0 + height / 2.0, 0.0f);
+	glVertex3f(this->webTarget->x(0), this->webTarget->x(1), 0.0f);
 	glEnd();
 }
 

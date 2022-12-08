@@ -167,7 +167,7 @@ static void init()
 	// of your OpenGL error.
 	GLSL::checkError(GET_FILE_LINE);
 
-	keyToggles['p'] = false;
+	keyToggles['p'] = true;
 	camera->setTranslation(camera->offset());
 }
 

@@ -145,12 +145,6 @@ void Polygon::draw(shared_ptr<MatrixStack> MV, const shared_ptr<Program> prog) c
 }
 
 void Polygon::step(double h, Eigen::Vector3d grav, Eigen::Vector3d movement) {
-	/*x0 += movement(0);
-	y0 += movement(1);
-	for (auto p : vertices) {
-		p->v = movement;
-		p->x += p->v;
-	}*/
 
 	M.setZero();
 	K.setZero();
@@ -165,7 +159,7 @@ void Polygon::step(double h, Eigen::Vector3d grav, Eigen::Vector3d movement) {
 		Mi.setIdentity();
 		Mi *= p->m;
 		M.block<3, 3>(p->i, p->i) = Mi;
-		v.segment<3>(p->i) = p->v;
+		v.segment<3>(p->i) = p->v + movement;
 		f.segment<3>(p->i) = p->m * grav;
 	}
 	

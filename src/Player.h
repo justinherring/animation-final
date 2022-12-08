@@ -16,6 +16,7 @@ public:
 	Ray shootWeb(Eigen::Vector2d position);
 	void removeWeb();
 
+	void reset();
 	void step(double h, Eigen::Vector3d grav, bool keys[256]);
 
 	void draw(std::shared_ptr<MatrixStack> MV, const std::shared_ptr<Program> prog) const;
@@ -31,6 +32,11 @@ private:
 
 	double x0, y0, width, height;
 	Ray web;
+	std::shared_ptr<Particle> webTarget;
+	std::shared_ptr<Particle> center;
+
+	void createWeb(std::shared_ptr<Particle> target);
+	void removeBBWeb(std::shared_ptr<Particle> oldTarget);
 };
 
 #endif
