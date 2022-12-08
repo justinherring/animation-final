@@ -20,7 +20,7 @@ Player::Player(double x0, double y0, double width, double height,
 	const std::shared_ptr<Shape> cube, const std::shared_ptr<Shape> sphere) :
 	x0(x0), y0(y0), width(width), height(height), cube(cube)
 {
-	boundingBox = make_shared<Polygon>(x0, y0, width, height, sphere, true);
+	boundingBox = make_shared<Polygon>(x0, y0, width, height, sphere, false);
 }
 
 Player::~Player() {
@@ -66,7 +66,7 @@ void Player::drawWebs() const {
 void Player::draw(std::shared_ptr<MatrixStack> MV, const std::shared_ptr<Program> prog) const
 {
 	MV->pushMatrix();
-	MV->translate(boundingBox->x0, boundingBox->y0 + boundingBox->height / 2.0f, 0.0f);
+	MV->translate(boundingBox->x0 + width / 2.0, boundingBox->y0 + boundingBox->height / 2.0f, 0.0f);
 	MV->scale(boundingBox->width, boundingBox->height, 0.1f);
 	glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE, glm::value_ptr(MV->topMatrix()));
 	glUniform3fv(prog->getUniform("kdFront"), 1, Vector3f(1.0, 0.0, 0.0).data());

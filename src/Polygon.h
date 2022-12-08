@@ -56,6 +56,9 @@ private:
 	Eigen::VectorXd f;
 	Eigen::MatrixXd M;
 	Eigen::MatrixXd K;
+
+	double x_original;
+	double y_original;
 };
 
 #endif

@@ -14,7 +14,7 @@ Scene::Scene() :
 	t(0.0),
 	h(1e-2),
 	grav(0.0, 0.0, 0.0),
-	drawBoundingBoxes(false)
+	drawBoundingBoxes(true)
 {
 }
 
@@ -35,7 +35,7 @@ void Scene::load(const string &RESOURCE_DIR)
 	sphere->loadMesh(RESOURCE_DIR + "sphere2.obj");
 	cube->loadMesh(RESOURCE_DIR + "cube.obj");
 
-	player = make_shared<Player>(0, 0, 0.1, 0.2, cube, sphere);
+	player = make_shared<Player>(0, 1, 0.1, 0.2, cube, sphere);
 	int maxBuildings = 10;
 	int spacing = 1;
 	for (int i = 0; i < maxBuildings; i++) {

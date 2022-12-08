@@ -69,7 +69,7 @@ void Camera::applyViewMatrix(std::shared_ptr<MatrixStack> MV) const
 
 void Camera::followPlayerTranslation(Eigen::Vector3d playerPosition) {
 	playerPosition(0) *= -1.0;
-	playerPosition(1) += offset().y;
+	playerPosition(1) = -playerPosition(1) + offset().y;
 	playerPosition(2) = translations.z;
 	setTranslation(playerPosition);
 }
