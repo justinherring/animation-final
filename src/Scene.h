@@ -25,6 +25,11 @@ public:
 	virtual ~Scene();
 	
 	void load(const std::string &RESOURCE_DIR);
+	void loadScene0();
+	void loadScene1();
+	void loadScene2();
+	void loadScene3();
+
 	void init();
 	void tare();
 	void reset();

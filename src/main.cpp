@@ -69,6 +69,22 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
 		keyPresses['d'] = false;
 	}
+
+	if (key == GLFW_KEY_0 && action == GLFW_PRESS) {
+		scene->loadScene0();
+	}
+
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+		scene->loadScene1();
+	}
+
+	if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+		scene->loadScene2();
+	}
+
+	if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
+		scene->loadScene3();
+	}
 }
 
 static void char_callback(GLFWwindow *window, unsigned int key)
@@ -91,10 +107,7 @@ static void char_callback(GLFWwindow *window, unsigned int key)
 
 static void cursor_position_callback(GLFWwindow* window, double xmouse, double ymouse)
 {
-	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-	if(state == GLFW_PRESS) {
-		//camera->mouseMoved(xmouse, ymouse);
-	}
+
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -109,7 +122,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		bool shift = mods & GLFW_MOD_SHIFT;
 		bool ctrl  = mods & GLFW_MOD_CONTROL;
 		bool alt   = mods & GLFW_MOD_ALT;
-		//camera->mouseClicked(xmouse, ymouse, shift, ctrl, alt
 		if (keyToggles['p']) {
 			Vector2d cursorPosition;
 			double xdirection = xmouse / (double)width - 0.5;

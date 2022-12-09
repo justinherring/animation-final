@@ -137,6 +137,13 @@ void Player::step(double h, Vector3d grav, bool keys[256], vector<shared_ptr<Bui
 				center->v(1) = 0;
 				continue;
 			}
+			// colliding from bottom
+			if (p11->x(1) >= bp00->x(1) && bp00->x(1) >= p00->x(1)) {
+				double dy = p11->x(1) - bp00->x(1);
+				center->x(1) -= collisionConstant * dy;
+				center->v(1) = 0;
+				continue;
+			}
 			// colliding from left
 			if (p11->x(0) >= bp00->x(0) && p00->x(0) <= bp00->x(0)) {
 				double dx = p11->x(0) - bp00->x(0);

@@ -16,7 +16,7 @@ Scene::Scene() :
 	t(0.0),
 	h(1e-2),
 	grav(0.0, 0.0, 0.0),
-	drawBoundingBoxes(true)
+	drawBoundingBoxes(false)
 {
 }
 
@@ -42,8 +42,40 @@ void Scene::load(const string &RESOURCE_DIR)
 	sphere->loadMesh(RESOURCE_DIR + "sphere2.obj");
 	cube->loadMesh(RESOURCE_DIR + "cube.obj");
 
+	loadScene2();
+	
+}
+
+void Scene::loadScene0() {
+	player = make_shared<Player>(0, 10, 0.1, 0.2, cube, sphere);
+	
+	backgroundBuildings.clear();
+	foregroundBuildings.clear();
+	shared_ptr<Building> b = make_shared<Building>(3, 0, 2, 10, 3, cube, sphere);
+	b->setColor(Vector3f(0.4, 0.4, 0.4));
+	backgroundBuildings.push_back(b);
+}
+
+void Scene::loadScene1() {
 	player = make_shared<Player>(0, 3, 0.1, 0.2, cube, sphere);
+
+	backgroundBuildings.clear();
+	shared_ptr<Building> b0 = make_shared<Building>(1, 0, 1, 4, 1, cube, sphere);
+	b0->setColor(Vector3f(0.4, 0.4, 0.4));
+	backgroundBuildings.push_back(b0);
+
+	foregroundBuildings.clear();
+	shared_ptr<Building> b1 = make_shared<Building>(1, 1, 1, 1, 1, cube, sphere, true);
+	b1->setColor(Vector3f(0.6, 0.6, 0.6));
+	foregroundBuildings.push_back(b1);
+}
+
+void Scene::loadScene2() {
+	player = make_shared<Player>(0, 3, 0.1, 0.2, cube, sphere);
+
 	int maxBuildings = 100;
+	backgroundBuildings.clear();
+	foregroundBuildings.clear();
 	srand(0);
 	for (int i = 0; i < maxBuildings; i++) {
 		double spacing = randomDouble(0.5, 2.5);
@@ -68,7 +100,33 @@ void Scene::load(const string &RESOURCE_DIR)
 		b->setColor(Vector3f(bR, bG, bB));
 		foregroundBuildings.push_back(b);
 	}
-	
+}
+
+void Scene::loadScene3() {
+	player = make_shared<Player>(0, 3, 0.1, 0.2, cube, sphere);
+
+	int maxBuildings = 100;
+	backgroundBuildings.clear();
+	foregroundBuildings.clear();
+	srand(0);
+	for (int i = 0; i < maxBuildings; i++) {
+		double bWidth = randomDouble(0.75, 1.25);
+		double bHeight = randomDouble(4.0, 8.0);
+		double bDepth = randomDouble(1.5, 3.5);
+		shared_ptr<Building> back = make_shared<Building>(2 * i + 2, 0, bWidth, bHeight, bDepth, cube, sphere);
+		double bR = randomDouble(0.5, 0.7);
+		double bG = randomDouble(0.5, 0.7);
+		double bB = randomDouble(0.5, 0.7);
+		back->setColor(Vector3f(bR, bG, bB));
+		backgroundBuildings.push_back(back);
+
+		shared_ptr<Building> foreLow = make_shared<Building>(2 * i + 2,  0,              bWidth, bHeight * 0.25, bDepth, cube, sphere, true);
+		foreLow->setColor(Vector3f(bR, bG, bB));
+		shared_ptr<Building> foreHigh = make_shared<Building>(2 * i + 2, bHeight * 0.75, bWidth, bHeight * 0.25, bDepth, cube, sphere, true);
+		foreHigh->setColor(Vector3f(bR, bG, bB));
+		foregroundBuildings.push_back(foreLow);
+		foregroundBuildings.push_back(foreHigh);
+	}
 }
 
 void Scene::init()
@@ -98,8 +156,6 @@ void Scene::step(bool keys[256])
 
 void Scene::draw(shared_ptr<MatrixStack> MV, const shared_ptr<Program> prog) const
 {
-	// glUniform3fv(prog->getUniform("kdFront"), 1, Vector3f(1.0, 1.0, 1.0).data());
-	
 	player->draw(MV, prog);
 	if (drawBoundingBoxes) {
 		player->drawBoundingBox(MV, prog);
