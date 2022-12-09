@@ -90,3 +90,36 @@ void Scene::drawLines(shared_ptr<MatrixStack> MV, const shared_ptr<Program> prog
 }
 
 std::shared_ptr<Player> Scene::getPlayer() { return player; }
+
+void Scene::shootWeb(Vector2d d) {
+	player->removeWeb();
+
+	Vector3d currentPosition = player->position();
+	currentPosition(0) += player->getWidth() * 0.5;
+	currentPosition(1) += player->getHeight() * 0.5;
+	Vector3d direction;
+	direction << d(0), d(1), 0.0;
+	direction.normalize();
+
+	Ray potentialWeb(currentPosition, direction);
+	double tmin, tmax;
+	double actual_t = 1e18;
+	bool hit = false;
+	bool everHit = false;
+	for (int i = 0; i < backgroundBuildings.size(); i++) {
+		auto b = backgroundBuildings[i];
+		hit = b->boundingBox->collide(potentialWeb, tmin, tmax);
+		if (hit) {
+			everHit = true;
+			actual_t = min((tmin > 0) ? tmin : 1e18, actual_t);
+		}
+	}
+	Vector3d target = currentPosition + actual_t * direction;
+	if (0 < actual_t && actual_t < 30 && target(1) > 0 && everHit) {
+		player->shootWeb(target);
+	}
+}
+
+void Scene::removeWeb() {
+	player->removeWeb();
+}

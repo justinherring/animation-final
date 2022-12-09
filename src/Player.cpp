@@ -33,6 +33,7 @@ Player::Player(double x0, double y0, double width, double height,
 	center->m = 1;
 	center->r = width * 0.5;
 	center->fixed = false;
+	center->tare();
 }
 
 Player::~Player() {}
@@ -47,19 +48,13 @@ void Player::removeBBWeb(shared_ptr<Particle> oldTarget) {
 	webTarget = nullptr;
 }
 
-Ray Player::shootWeb(Vector2d position) {
-	Vector3d direction;
-	direction(0) = position(0);
-	direction(1) = position(1);
-	direction(2) = 0.0;
+void Player::shootWeb(Vector3d d) {
 	if (webTarget) {
 		removeBBWeb(webTarget);
 	}
 	webTarget = make_shared<Particle>();
-	webTarget->x = this->position() + direction;
+	webTarget->x = d;
 	createWeb(webTarget);
-	this->web = Ray(Vector3d(), direction);
-	return this->web;
 }
 
 void Player::removeWeb() {
@@ -72,6 +67,7 @@ void Player::reset() {
 		removeBBWeb(webTarget);
 		webTarget = nullptr;
 	}
+	center->reset();
 	boundingBox->reset();
 }
 
@@ -166,8 +162,8 @@ void Player::drawWebs() const {
 	glColor3f(0.8f, 0.8f, 0.8f);
 	glLineWidth(4.0f);
 	glBegin(GL_LINES);
-	glVertex3f(boundingBox->x0 + width / 2.0, boundingBox->y0 + height / 2.0, 0.0f);
-	glVertex3f(this->webTarget->x(0), this->webTarget->x(1), 0.0f);
+	glVertex3f(center->x(0), center->x(1), 0.0f);
+	glVertex3f(this->webTarget->x(0), this->webTarget->x(1), -0.5f);
 	glEnd();
 }
 

@@ -83,8 +83,7 @@ static void char_callback(GLFWwindow *window, unsigned int key)
 			scene->reset();
 			break;
 		case 'w':
-			if (keyToggles['p'])
-				scene->getPlayer()->removeWeb();
+			scene->removeWeb();
 			break;
 	}
 	scene->setDrawBoundingBoxes(keyToggles['o']);
@@ -117,7 +116,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 			double ydirection = 0.5 - ymouse / (double)height;
 			cursorPosition << xdirection, ydirection;
 			cursorPosition.normalize();
-			scene->getPlayer()->shootWeb(cursorPosition);
+			scene->shootWeb(cursorPosition);
 		}
 	}
 }

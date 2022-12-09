@@ -21,8 +21,6 @@ Building::Building(double x0, double y0, double width, double height, double dep
 	x0(x0), y0(y0), width(width), height(height), depth(depth), cube(cube)
 {
 	boundingBox = make_shared<Polygon>(x0, y0, width, height, sphere);
-	// for (auto v : boundingBox->vertices)
-	//	v->x(2) = -0.5;
 }
 
 Building::~Building() {

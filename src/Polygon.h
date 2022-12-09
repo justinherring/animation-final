@@ -15,6 +15,7 @@ class Shape;
 class Program;
 class MatrixStack;
 class Particle;
+class Ray;
 
 class Polygon
 {
@@ -30,6 +31,7 @@ public:
 
 	bool collide(std::shared_ptr<Particle> v);
 	bool collide(std::shared_ptr<Polygon> p);
+	bool collide(Ray r, double& tmin, double& tmax);
 	void step(Eigen::Vector3d position);
 
 	std::vector<std::shared_ptr<Particle> > vertices;

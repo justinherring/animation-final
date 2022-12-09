@@ -13,6 +13,7 @@
 #include "Program.h"
 #include "MatrixStack.h"
 #include "Polygon.h"
+#include "Ray.h"
 
 using namespace std;
 using namespace Eigen;
@@ -164,4 +165,30 @@ bool Polygon::collide(shared_ptr<Polygon> p) {
 		&& p->x0 <= (x0 + width)
 		&& y0 <= (p->y0 + p->height)
 		&& p->y0 <= (y0 + height);
+}
+
+// code for ray-AABB intersection adapted from https://tavianator.com/2011/ray_box.html
+bool Polygon::collide(Ray r, double& tmin, double& tmax) {
+	tmin = 0, tmax = INFINITY;
+
+	auto p00 = vertices[0];
+	auto p11 = vertices[3];
+
+	if (r.d(0) != 0.0) {
+		double tx1 = (p00->x(0) - r.x(0)) / r.d(0);
+		double tx2 = (p11->x(0) - r.x(0)) / r.d(0);
+
+		tmin = max(tmin, min(tx1, tx2));
+		tmax = min(tmax, max(tx1, tx2));
+	}
+
+	if (r.d(1) != 0.0) {
+		double ty1 = (p00->x(1) - r.x(1)) / r.d(1);
+		double ty2 = (p11->x(1) - r.x(1)) / r.d(1);
+
+		tmin = max(tmin, min(ty1, ty2));
+		tmax = min(tmax, max(ty1, ty2));
+	}
+
+	return tmax >= tmin;
 }

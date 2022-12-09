@@ -40,7 +40,7 @@ public:
 
 	std::shared_ptr<Player> getPlayer();
 
-	void shootWeb(Eigen::Vector2d position);
+	void shootWeb(Eigen::Vector2d d);
 	void removeWeb();
 	
 private:

@@ -12,7 +12,7 @@ public:
 		const std::shared_ptr<Shape> cube, const std::shared_ptr<Shape> sphere);
 	~Player();
 
-	Ray shootWeb(Eigen::Vector2d position);
+	void shootWeb(Eigen::Vector3d position);
 	void removeWeb();
 
 	void reset();
@@ -21,6 +21,9 @@ public:
 	void draw(std::shared_ptr<MatrixStack> MV, const std::shared_ptr<Program> prog) const;
 	void drawBoundingBox(std::shared_ptr<MatrixStack> MV, const std::shared_ptr<Program> prog) const;
 	void drawWebs() const;
+
+	double getWidth() { return width; }
+	double getHeight() { return height; }
 
 	Eigen::Vector3d position() const;
 
