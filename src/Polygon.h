@@ -50,6 +50,8 @@ public:
 		return s;
 	}
 
+	friend std::ostream& operator<<(std::ostream& os, const Polygon& p);
+
 private:
 	const std::shared_ptr<Shape> sphere;
 	void createRectangle(double x0, double y0, double width, double height, const std::shared_ptr<Shape> shape, bool fixed=true);

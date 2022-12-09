@@ -42,7 +42,7 @@ void Scene::load(const string &RESOURCE_DIR)
 	sphere->loadMesh(RESOURCE_DIR + "sphere2.obj");
 	cube->loadMesh(RESOURCE_DIR + "cube.obj");
 
-	player = make_shared<Player>(0, 1, 0.1, 0.2, cube, sphere);
+	player = make_shared<Player>(0, 3, 0.1, 0.2, cube, sphere);
 	int maxBuildings = 100;
 	srand(0);
 	for (int i = 0; i < maxBuildings; i++) {
@@ -50,7 +50,7 @@ void Scene::load(const string &RESOURCE_DIR)
 		double bWidth = randomDouble(0.75, 1.25);
 		double bHeight = randomDouble(4.0, 8.0);
 		double bDepth = randomDouble(1.5, 3.5);
-		shared_ptr<Building> b = make_shared<Building>(spacing + i * 2, 0, bWidth, bHeight, bDepth, cube, sphere);
+		shared_ptr<Building> b = make_shared<Building>(spacing + i * 2 - 50, 0, bWidth, bHeight, bDepth, cube, sphere);
 		double bR = randomDouble(0.2, 0.4);
 		double bG = randomDouble(0.2, 0.4);
 		double bB = randomDouble(0.2, 0.4);
@@ -61,7 +61,7 @@ void Scene::load(const string &RESOURCE_DIR)
 		double spacing = randomDouble(0.5, 2.5);
 		double bWidth = randomDouble(0.75, 1.25);
 		double bHeight = randomDouble(0.5, 1.5);
-		shared_ptr<Building> b = make_shared<Building>(spacing + i * 2, 0, bWidth, bHeight, 0.5, cube, sphere, true);
+		shared_ptr<Building> b = make_shared<Building>(spacing + i * 2 - 50, 0, bWidth, bHeight, 0.5, cube, sphere, true);
 		double bR = randomDouble(0.5, 0.7);
 		double bG = randomDouble(0.5, 0.7);
 		double bB = randomDouble(0.5, 0.7);

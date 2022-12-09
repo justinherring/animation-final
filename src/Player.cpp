@@ -114,37 +114,44 @@ void Player::step(double h, Vector3d grav, bool keys[256], vector<shared_ptr<Bui
 		}*/
 	}
 
-	// Collision detection and response
-	double collisionConstant = 100.0;
-	/*
-	for (int i = 0; i < vertices.size(); i++) {
-		if (vertices[i]->fixed) continue;
-		auto p = vertices[i];
-		for (int j = 0; j < spheres.size(); j++) {
-			auto s = spheres[j];
-
-			Vector3d dx = s->x - p->x;
-			double l = dx.norm();
-			double d = s->r + p->r - l;
-
-			if (d > 0) {
-				Vector3d n = dx / l;
-				f.segment<3>(p->i) -= collisionConstant * d * n;
-
-				Matrix3d I3d;
-				I3d.setIdentity();
-				K.block<3, 3>(p->i, p->i) += collisionConstant * d * I3d;
-			}
-		}
-
-	}*/
-
 	MatrixXd A = M - h * h * K;
 	MatrixXd b = M * v + h * f;
 	//cout << "A:\n" << A << "\n\nb:\n" << b << endl;
 	VectorXd solution = A.ldlt().solve(b); // solution contains v(k+1)
 	center->v = solution;
 	center->x = center->x + h * center->v;
+
+	// Collision detection and response
+	double collisionConstant = 2;
+	for (int j = 0; j < fgBuildings.size(); j++) {
+		auto b = fgBuildings[j];
+		if (b->boundingBox->collide(boundingBox)) {
+			auto p00 = boundingBox->vertices[0];
+			auto p11 = boundingBox->vertices[3];
+			auto bp00 = b->boundingBox->vertices[0];
+			auto bp11 = b->boundingBox->vertices[3];
+			// colliding from top
+			if (p00->x(1) <= bp11->x(1) && p11->x(1) >= bp11->x(1)) {
+				double dy = bp11->x(1) - p00->x(1);
+				center->x(1) += collisionConstant * dy;
+				center->v(1) = 0;
+				continue;
+			}
+			// colliding from left
+			if (p11->x(0) >= bp00->x(0) && p00->x(0) <= bp00->x(0)) {
+				double dx = p11->x(0) - bp00->x(0);
+				center->x(0) -= collisionConstant * dx;
+				center->v(0) = 0;
+			}
+			// colliding from right
+			if (p00->x(0) <= bp11->x(0) && p11->x(0) >= bp11->x(0)) {
+				double dx = bp11->x(0) - p00->x(0);
+				center->x(0) += collisionConstant * dx;
+				center->v(0) = 0;
+			}
+			
+		}
+	}
 
 	double physicsFloor = height / 2.0;
 	double damping = 0.5;

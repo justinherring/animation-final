@@ -18,7 +18,7 @@
 using namespace std;
 using namespace Eigen;
 
-void Polygon::createRectangle(double x0, double y0, double width, double height, const std::shared_ptr<Shape> shape, bool fixed)
+void Polygon::createRectangle(double x0, double y0, double width, double _height, const std::shared_ptr<Shape> shape, bool fixed)
 {
 	shared_ptr<Particle> p00, p01, p10, p11;
 	if (shape) {
@@ -58,7 +58,7 @@ void Polygon::createRectangle(double x0, double y0, double width, double height,
 	vertices.push_back(p01);
 
 	x(0) = x0 - 0.5 * width;
-	x(1) = y0 + height;
+	x(1) = y0 + _height;
 	p10->i = 6;
 	p10->m = 0.25 * mass;
 	p10->x = x;
@@ -68,6 +68,7 @@ void Polygon::createRectangle(double x0, double y0, double width, double height,
 	vertices.push_back(p10);
 
 	x(0) = x0 + 0.5 * width;
+	x(1) = y0 + _height;
 	p11->i = 9;
 	p11->m = 0.25 * mass;
 	p11->x = x;
@@ -91,6 +92,12 @@ Polygon::Polygon(double x0, double y0, double width, double height, const shared
 	x0(x0), y0(y0), width(width), height(height), sphere(shape), x_original(x0), y_original(y0)
 {
 	createRectangle(x0, y0, width, height, shape, fixed);
+}
+
+std::ostream& operator<<(std::ostream& os, const Polygon& p) {
+	os << "(" << p.vertices[0]->x(0) << ", " << p.vertices[0]->x(1) << "), ";
+	os << "(" << p.vertices[3]->x(0) << ", " << p.vertices[3]->x(1) << ")";
+	return os;
 }
 
 Polygon::~Polygon() {}
@@ -154,17 +161,18 @@ void Polygon::step(Eigen::Vector3d position) {
 }
 
 bool Polygon::collide(shared_ptr<Particle> v) {
-	return (x0 + width) >= v->x(0)
-		&& v->x(0) >= x0
-		&& (y0 + height) >= v->x(1)
-		&& v->x(1) >= y0;
+	auto p00 = vertices[0];
+	auto p11 = vertices[3];
+	bool inX = p00->x(0) <= v->x(0) && v->x(0) < p11->x(0);
+	bool inY = p00->x(1) <= v->x(1) && v->x(1) < p11->x(1);
+	return inX && inY;
 }
 
 bool Polygon::collide(shared_ptr<Polygon> p) {
-	return x0 <= (p->x0 + p->width)
-		&& p->x0 <= (x0 + width)
-		&& y0 <= (p->y0 + p->height)
-		&& p->y0 <= (y0 + height);
+	for (auto v : p->vertices) {
+		if (collide(v)) return true;
+	}
+	return false;
 }
 
 // code for ray-AABB intersection adapted from https://tavianator.com/2011/ray_box.html
