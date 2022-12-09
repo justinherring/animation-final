@@ -208,11 +208,11 @@ void render()
 	glUniformMatrix4fv(progSimple->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P->topMatrix()));
 	glUniformMatrix4fv(progSimple->getUniform("MV"), 1, GL_FALSE, glm::value_ptr(MV->topMatrix()));
 	glLineWidth(2.0f);
-	float x0 = -0.5f;
-	float x1 = 0.5f;
-	float z0 = -0.5f;
-	float z1 = 0.5f;
-	int gridSize = 10;
+	float x0 = -100;
+	float x1 = 100;
+	float z0 = -100;
+	float z1 = 100;
+	int gridSize = 200;
 	glLineWidth(1.0f);
 	glBegin(GL_LINES);
 	for(int i = 1; i < gridSize; ++i) {

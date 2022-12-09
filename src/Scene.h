@@ -55,6 +55,7 @@ private:
 	
 	std::vector< std::shared_ptr<Particle> > spheres;
 	std::vector< std::shared_ptr<Building> > backgroundBuildings;
+	std::vector< std::shared_ptr<Building> > foregroundBuildings;
 };
 
 #endif

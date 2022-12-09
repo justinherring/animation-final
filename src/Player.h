@@ -6,6 +6,8 @@
 #include "Texture.h"
 #include "Polygon.h"
 
+class Building;
+
 class Player {
 public:
 	Player(double x0, double y0, double width, double height, 
@@ -16,7 +18,7 @@ public:
 	void removeWeb();
 
 	void reset();
-	void step(double h, Eigen::Vector3d grav, bool keys[256]);
+	void step(double h, Eigen::Vector3d grav, bool keys[256], std::vector<std::shared_ptr<Building> > fgBuildings);
 
 	void draw(std::shared_ptr<MatrixStack> MV, const std::shared_ptr<Program> prog) const;
 	void drawBoundingBox(std::shared_ptr<MatrixStack> MV, const std::shared_ptr<Program> prog) const;

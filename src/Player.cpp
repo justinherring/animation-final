@@ -12,6 +12,7 @@
 #include "MatrixStack.h"
 #include "Program.h"
 #include "Shape.h"
+#include "Building.h"
 
 using namespace std;
 using namespace Eigen;
@@ -71,7 +72,7 @@ void Player::reset() {
 	boundingBox->reset();
 }
 
-void Player::step(double h, Vector3d grav, bool keys[256]) {
+void Player::step(double h, Vector3d grav, bool keys[256], vector<shared_ptr<Building> > fgBuildings) {
 	Vector3d speed, dx;
 	dx << 0.02, 0.0, 0.0;
 	speed = (-keys['a'] + keys['d']) * dx;

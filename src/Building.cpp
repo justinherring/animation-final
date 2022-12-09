@@ -17,8 +17,9 @@ using namespace std;
 using namespace Eigen;
 
 Building::Building(double x0, double y0, double width, double height, double depth,
-	const shared_ptr<Shape> cube, const shared_ptr<Shape> sphere) :
-	x0(x0), y0(y0), width(width), height(height), depth(depth), cube(cube)
+	const shared_ptr<Shape> cube, const shared_ptr<Shape> sphere,
+	bool isForeground) :
+	x0(x0), y0(y0), width(width), height(height), depth(depth), cube(cube), _isForeground(isForeground)
 {
 	boundingBox = make_shared<Polygon>(x0, y0, width, height, sphere);
 }
@@ -30,11 +31,20 @@ Building::~Building() {
 void Building::draw(std::shared_ptr<MatrixStack> MV, const std::shared_ptr<Program> prog) const
 {
 	MV->pushMatrix();
-	MV->translate(boundingBox->x0, boundingBox->y0 + boundingBox->height / 2.0f, -0.5f -depth / 2.0f);
-	MV->scale(boundingBox->width, boundingBox->height, depth);
-	glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE, glm::value_ptr(MV->topMatrix()));
-	glUniform3fv(prog->getUniform("kdFront"), 1, Vector3f(0.4, 0.4, 0.4).data());
-	glUniform3fv(prog->getUniform("kdBack"), 1, Vector3f(0.4, 0.4, 0.4).data());
+	if (!_isForeground) {
+		MV->translate(boundingBox->x0, boundingBox->y0 + boundingBox->height / 2.0f, -0.5f - depth / 2.0f);
+		MV->scale(boundingBox->width, boundingBox->height, depth);
+		glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE, glm::value_ptr(MV->topMatrix()));
+		glUniform3fv(prog->getUniform("kdFront"), 1, _color.data());
+		glUniform3fv(prog->getUniform("kdBack"), 1, _color.data());
+	}
+	else {
+		MV->translate(boundingBox->x0, boundingBox->y0 + boundingBox->height / 2.0f, 0.0);
+		MV->scale(boundingBox->width, boundingBox->height, depth);
+		glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE, glm::value_ptr(MV->topMatrix()));
+		glUniform3fv(prog->getUniform("kdFront"), 1, _color.data());
+		glUniform3fv(prog->getUniform("kdBack"), 1, _color.data());
+	}
 	cube->draw(prog);
 	MV->popMatrix();
 }

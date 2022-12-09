@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <cstdlib>
+
 #include "Scene.h"
 #include "Particle.h"
 #include "Shape.h"
@@ -22,6 +24,11 @@ Scene::~Scene()
 {
 }
 
+double randomDouble(double low, double high) {
+	int randInt = rand() % (int) 1e3;
+	return randInt / 1e3 * (high - low) + low;
+}
+
 void Scene::load(const string &RESOURCE_DIR)
 {
 	// Units: meters, kilograms, seconds
@@ -36,11 +43,30 @@ void Scene::load(const string &RESOURCE_DIR)
 	cube->loadMesh(RESOURCE_DIR + "cube.obj");
 
 	player = make_shared<Player>(0, 1, 0.1, 0.2, cube, sphere);
-	int maxBuildings = 10;
-	int spacing = 1;
+	int maxBuildings = 100;
+	srand(0);
 	for (int i = 0; i < maxBuildings; i++) {
-		shared_ptr<Building> b = make_shared<Building>((1 + spacing) * i - maxBuildings / (1 + spacing), 0, 1, 5, 3, cube, sphere);
+		double spacing = randomDouble(0.5, 2.5);
+		double bWidth = randomDouble(0.75, 1.25);
+		double bHeight = randomDouble(4.0, 8.0);
+		double bDepth = randomDouble(1.5, 3.5);
+		shared_ptr<Building> b = make_shared<Building>(spacing + i * 2, 0, bWidth, bHeight, bDepth, cube, sphere);
+		double bR = randomDouble(0.2, 0.4);
+		double bG = randomDouble(0.2, 0.4);
+		double bB = randomDouble(0.2, 0.4);
+		b->setColor(Vector3f(bR, bG, bB));
 		backgroundBuildings.push_back(b);
+	}
+	for (int i = 0; i < maxBuildings; i++) {
+		double spacing = randomDouble(0.5, 2.5);
+		double bWidth = randomDouble(0.75, 1.25);
+		double bHeight = randomDouble(0.5, 1.5);
+		shared_ptr<Building> b = make_shared<Building>(spacing + i * 2, 0, bWidth, bHeight, 0.5, cube, sphere, true);
+		double bR = randomDouble(0.5, 0.7);
+		double bG = randomDouble(0.5, 0.7);
+		double bB = randomDouble(0.5, 0.7);
+		b->setColor(Vector3f(bR, bG, bB));
+		foregroundBuildings.push_back(b);
 	}
 	
 }
@@ -67,7 +93,7 @@ void Scene::reset()
 void Scene::step(bool keys[256])
 {
 	t += h;
-	player->step(h, grav, keys);
+	player->step(h, grav, keys, foregroundBuildings);
 }
 
 void Scene::draw(shared_ptr<MatrixStack> MV, const shared_ptr<Program> prog) const
@@ -79,6 +105,11 @@ void Scene::draw(shared_ptr<MatrixStack> MV, const shared_ptr<Program> prog) con
 		player->drawBoundingBox(MV, prog);
 	}
 	for (auto b : backgroundBuildings) {
+		b->draw(MV, prog);
+		if (drawBoundingBoxes)
+			b->boundingBox->draw(MV, prog);
+	}
+	for (auto b : foregroundBuildings) {
 		b->draw(MV, prog);
 		if (drawBoundingBoxes)
 			b->boundingBox->draw(MV, prog);
