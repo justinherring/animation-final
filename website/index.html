@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+	<link rel="stylesheet" href="style.css"> 
+	<title>Spiderman Simulation</title>
+</head>
+<body>
+	<div class="jumbotron text-center" id="header">
+		<h1>Spiderman Simulation</h1>
+		<h3>by Justin Herring for CSCE 450 Fall 2022</h3>
+	</div>
+	<div class="container">
+		
+		<div class="row" style="margin-top:5%; margin-bottom:5%;">
+			<p>For my final project of CSCE 450, I wrote a Spiderman simulator game. The user plays as Spiderman as he swings through the city.</p>
+			<p>
+				I based this project off of Assignment 5: Cloth Simulation because I wanted
+				the game to be physically-based. Spiderman is (partly) a particle, and whenever
+				he shoots a web, it generates a fixed particle at the target of the web, and
+				finally a spring is created that connects the two. This spring is what allows
+				Spiderman to swing. 
+			</p>
+			<p>
+				The next big addition to the physics system was collision detection between
+				axis-aligned bounding boxes (AABBs). Spiderman and every building in the scene have
+				AABBs. Spiderman's bounding box checks for collision with buildings in the
+				foreground. Spiderman's webs check for collision with buildings in the background.
+			</p>
+			<p>
+				It is very simple to check if AABBs overlap, but checking if a web intersects
+				an AABB is a little more involved. When the player wants to shoot a web,
+				a ray is shot, and checks for collision with every background building in the
+				scene. I use the slab method for determining if there is an intersection. If
+				there is, then the player's web is allowed to connect to the building's bounding
+				box.
+			</p>
+		</div>
+
+		<div class="row text-center">
+			<h4>Check out my presentation video below!</h4>
+			<video width="1920px" controls>
+				<source src="media/justin_herring.mp4" type="video/mp4">
+				Your browser does not support the HTML video tag.
+			</video>
+		</div>
+		
+		<div class="row" style="margin-top: 5%">
+			<h3>Credits</h3>
+			<p>Dr. Sueda provided a lot of the base code for Assignment 5: Cloth Simulation, which is where I started my final project.</p>
+			<p><a href=https://tavianator.com/2011/ray_box.html>This blog post</a> helped me understand the Slab method for checking ray-AABB intersections, 
+				and I also adapted some of its code for my project.<p>
+		</div>
+	</div>
+</body>
+</html>
+
